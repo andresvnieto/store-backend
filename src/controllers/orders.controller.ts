@@ -12,7 +12,7 @@ import {
 @Controller('orders')
 export class OrdersController {
   @Get()
-  getCustomers(@Query('limit') limit = 10, @Query('offset') offset = 0) {
+  getOrders(@Query('limit') limit = 10, @Query('offset') offset = 0) {
     return { message: `orders limit: ${limit} y offset ${offset}` };
   }
 
@@ -25,17 +25,17 @@ export class OrdersController {
   }
 
   @Get(':orderId')
-  getCustomer(@Param('orderId') orderId: string) {
+  getOrder(@Param('orderId') orderId: string) {
     return { message: `get order: ${orderId}` };
   }
 
   @Put(':orderId')
-  updateCustomer(@Param('orderId') orderId: string, @Body() body: any) {
+  updateOrder(@Param('orderId') orderId: string, @Body() body: any) {
     return { message: `put order: ${orderId}`, body };
   }
 
   @Delete(':orderId')
-  deleteCustomer(@Param('orderId') orderId: string) {
+  deleteOrder(@Param('orderId') orderId: string) {
     return { message: `delete order: ${orderId}` };
   }
 }

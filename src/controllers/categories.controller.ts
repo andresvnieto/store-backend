@@ -1,10 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 
 @Controller('categories')
 export class CategoriesController {
   @Get()
-  getUsers(@Query('limit') limit = 10, @Query('offset') offset = 0) {
-    return { message: `category limit: ${limit} y offset ${offset}` };
+  getCategories(@Query('limit') limit = 10, @Query('offset') offset = 0) {
+    return { message: `categories limit: ${limit} y offset ${offset}` };
   }
 
   @Post()
@@ -16,28 +25,20 @@ export class CategoriesController {
   }
 
   @Get(':categoryId')
-  getUser(@Param('categoryId') categoryId: string) {
-    return { mesaage: `get category: ${categoryId}` };
+  getCategory(@Param('categoryId') categoryId: string) {
+    return { message: `get category: ${categoryId}` };
   }
 
   @Put(':categoryId')
-  updateUser(@Param('categoryId') categoryId: string, @Body() body: any) {
-    return { mesaage: `put category: ${categoryId}`, body };
+  updateCategory(@Param('categoryId') categoryId: string, @Body() body: any) {
+    return {
+      message: `put category: ${categoryId}`,
+      body,
+    };
   }
 
   @Delete(':categoryId')
-  deleteUser(@Param('categoryId') categoryId: string) {
-    return { mesaage: `delete category: ${categoryId}` };
-  }
-
-  @Get(':categoryId/products/:productId')
-  getCategories(
-    @Param('categoryId') categoryId: string,
-    @Param('productId') productId: string,
-  ) {
-    return {
-      categoryId,
-      productId,
-    };
+  deleteCategory(@Param('categoryId') categoryId: string) {
+    return { message: `delete category: ${categoryId}` };
   }
 }

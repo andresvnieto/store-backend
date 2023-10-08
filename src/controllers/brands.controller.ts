@@ -8,34 +8,46 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
+import { CreateBrandDto, UpdateBrandDto } from 'src/dtos/brands.dto';
+import { BrandsService } from 'src/services/brands.service';
 
 @Controller('brands')
 export class BrandsController {
+  constructor(private readonly brandsService: BrandsService) {}
   @Get()
-  getBrands(@Query('limit') limit = 10, @Query('offset') offset = 0) {
-    return { message: `brands limit: ${limit} y offset ${offset}` };
+  getAll(@Query('offset') offset, @Query('limit') limit) {
+    return this.brandsService.findAll(Number(offset), Number(limit));
   }
 
   @Post()
-  createOne(@Body() body) {
+  createOne(@Body() body: CreateBrandDto) {
+    console.log(body);
+    return this.brandsService.create(body);
+  }
+
+  @Get(':productId')
+  getOne(@Param('productId', ParseIntPipe) productId: number) {
+    return this.brandsService.findOne(productId);
+  }
+
+  @Put(':productId')
+  updateOne(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() body: UpdateBrandDto,
+  ) {
+    return this.updateOne(productId, body);
+  }
+
+  @Delete(':productId')
+  deleteOne(@Param('productId', ParseIntPipe) productId: number) {
+    return this.deleteOne(productId);
+  }
+
+  @Get('/filter')
+  filter() {
     return {
-      message: 'Accion de crear',
-      body,
+      message: 'Soy un filter',
     };
-  }
-
-  @Get(':brandId')
-  getBrand(@Param('brandId') brandId: string) {
-    return { message: `get brand: ${brandId}` };
-  }
-
-  @Put(':brandId')
-  updateBrand(@Param('brandId') brandId: string, @Body() body: any) {
-    return { message: `put brand: ${brandId}`, body };
-  }
-
-  @Delete(':brandId')
-  deleteBrand(@Param('brandId') brandId: string) {
-    return { mesaage: `delete brand: ${brandId}` };
   }
 }
