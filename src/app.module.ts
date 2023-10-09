@@ -13,9 +13,11 @@ import { OrdersService } from './services/orders.service';
 import { UsersService } from './services/users.service';
 import { CustomersService } from './services/customers.service';
 import { BrandsService } from './services/brands.service';
+import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
-  imports: [],
+  imports: [UsersModule, ProductsModule],
   controllers: [
     AppController,
     ProductsController,
