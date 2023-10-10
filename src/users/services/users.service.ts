@@ -1,17 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductDto, UpdateProductDto } from 'src/dtos/users.dto';
+import { User } from '../entities/user.entity';
+import { Order } from 'src/orders/entities/order.entity';
+import { ProductsService } from 'src/products/services/products.service';
+import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly productService: ProductsService) {}
   private counterId = 0;
-  private users: Product[] = [
+  private users: User[] = [
     {
       id: 0,
-      name: 'Producto 1',
-      description: 'Lorem ipsum dolor',
-      price: 12000,
-      image: 'asd',
-      stock: 23,
+      name: 'Usero 1',
+      email: 'asdasd@gmail.com',
+      orders: [],
     },
   ];
 
@@ -47,24 +49,25 @@ export class UsersService {
     return user;
   }
 
-  create(user: CreateProductDto) {
+  create(user: CreateUserDto) {
     this.counterId = this.counterId + 1;
-    const newProduct = {
+    const newUser = {
       id: this.counterId,
+      orders: [],
       ...user,
     };
-    this.users.push(newProduct);
-    return newProduct;
+    this.users.push(newUser);
+    return newUser;
   }
 
-  updateOne(id: number, dataProduct: UpdateProductDto) {
+  updateOne(id: number, dataUser: UpdateUserDto) {
     const userExist = this.findOne(id);
     if (userExist) {
       const index = this.users.findIndex((item) => item.id === id);
       const user = this.users[index];
-      const updatedProduct = { ...user, ...dataProduct };
-      this.users[index] = updatedProduct;
-      return updatedProduct;
+      const updatedUser = { ...user, ...dataUser };
+      this.users[index] = updatedUser;
+      return updatedUser;
     } else {
       return null;
     }
@@ -81,5 +84,11 @@ export class UsersService {
     } else {
       return null;
     }
+  }
+
+  getOrdersByUser(id: number): Order[] {
+    const userExist = this.findOne(id);
+    if (!userExist) throw new NotFoundException('El usuario no existe');
+    return userExist.orders;
   }
 }

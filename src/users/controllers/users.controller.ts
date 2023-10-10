@@ -8,37 +8,51 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
+import { UsersService } from '../services/users.service';
+import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
 
 @Controller('users')
 export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
   @Get()
-  getUsers(@Query('limit') limit = 10, @Query('offset') offset = 0) {
-    return { message: `users limit: ${limit} y offset ${offset}` };
+  getAll(@Query('offset') offset, @Query('limit') limit) {
+    return this.usersService.findAll(Number(offset), Number(limit));
   }
 
   @Post()
-  createOne(@Body() body) {
-    return {
-      message: 'Accion de crear',
-      body,
-    };
+  createOne(@Body() body: CreateUserDto) {
+    console.log(body);
+    return this.usersService.create(body);
   }
 
   @Get(':userId')
-  getUser(@Param('userId') userId: string) {
-    return { message: `get user: ${userId}` };
+  getOne(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.findOne(userId);
+  }
+
+  @Get(':userId/orders')
+  getOrders(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.findOne(userId);
   }
 
   @Put(':userId')
-  updateUser(@Param('userId') userId: string, @Body() body: any) {
-    return {
-      message: `put user: ${userId}`,
-      body,
-    };
+  updateOne(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() body: UpdateUserDto,
+  ) {
+    return this.updateOne(userId, body);
   }
 
   @Delete(':userId')
-  deleteUser(@Param('userId') userId: string) {
-    return { message: `delete user: ${userId}` };
+  deleteOne(@Param('userId', ParseIntPipe) userId: number) {
+    return this.deleteOne(userId);
+  }
+
+  @Get('/filter')
+  filter() {
+    return {
+      message: 'Soy un filter',
+    };
   }
 }
