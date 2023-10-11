@@ -4,6 +4,6 @@ export class Order {
   id: number;
   description: string;
   date: Date;
-  user: User;
-  products: Product[];
+  user?: User;
+  products?: Product[];
 }

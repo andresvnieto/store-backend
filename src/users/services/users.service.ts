@@ -3,17 +3,27 @@ import { User } from '../entities/user.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { ProductsService } from 'src/products/services/products.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
+import { OrdersService } from 'src/orders/services/orders.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly productService: ProductsService) {}
+  constructor(
+    private readonly productService: ProductsService,
+    private readonly ordersService: OrdersService,
+  ) {}
   private counterId = 0;
   private users: User[] = [
     {
       id: 0,
       name: 'Usero 1',
       email: 'asdasd@gmail.com',
-      orders: [],
+      orders: [
+        {
+          id: 0,
+          description: 'Lorem ipsum dolor',
+          date: new Date(),
+        },
+      ],
     },
   ];
 
