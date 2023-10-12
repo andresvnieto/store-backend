@@ -9,9 +9,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
-import { CreateProductDto, UpdateProductDto } from 'src/dtos/products.dto';
-import { ProductsService } from 'src/services/products.service';
-
+import { ProductsService } from '../services/products.service';
+import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}

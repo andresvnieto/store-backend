@@ -1,16 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { Order } from 'src/orders/entities/order.entity';
-import { ProductsService } from 'src/products/services/products.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
-import { OrdersService } from 'src/orders/services/orders.service';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly productService: ProductsService,
-    private readonly ordersService: OrdersService,
-  ) {}
+  constructor() {}
   private counterId = 0;
   private users: User[] = [
     {
