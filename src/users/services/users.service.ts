@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
-  constructor() {}
+  constructor(private configService: ConfigService) {}
   private counterId = 0;
   private users: User[] = [
     {
@@ -25,7 +26,7 @@ export class UsersService {
   findAll(offset: number, limit: number) {
     const copyUsers = [...this.users];
 
-    console.log(offset, limit);
+    console.log(this.configService.get('API_KEY'));
 
     if (offset > this.users.length || offset < 0) {
       offset = 0;

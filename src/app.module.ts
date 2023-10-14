@@ -10,6 +10,8 @@ import { CustomersModule } from './customers/customers.module';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
+import { enviroments } from './config/configuration';
 
 @Module({
   imports: [
@@ -21,6 +23,10 @@ import { DatabaseModule } from './database/database.module';
     CustomersModule,
     HttpModule,
     DatabaseModule,
+    ConfigModule.forRoot({
+      envFilePath: enviroments[process.env.NODE_ENV] || '.env',
+      isGlobal: true,
+    }),
   ],
   controllers: [AppController],
   providers: [
