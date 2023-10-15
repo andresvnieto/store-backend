@@ -11,11 +11,14 @@ import {
 import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get()
+  @ApiOperation({ description: 'Lista de usuarios' })
   getAll(@Query('offset') offset, @Query('limit') limit) {
     return this.usersService.findAll(Number(offset), Number(limit));
   }

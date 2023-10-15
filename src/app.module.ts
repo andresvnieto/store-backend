@@ -12,6 +12,8 @@ import { lastValueFrom } from 'rxjs';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { enviroments } from './config/configuration';
+import config from './config';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -26,6 +28,12 @@ import { enviroments } from './config/configuration';
     ConfigModule.forRoot({
       envFilePath: enviroments[process.env.NODE_ENV] || '.env',
       isGlobal: true,
+      load: [config],
+      validationSchema: Joi.object({
+        API_KEY: Joi.number().required(),
+        PORT: Joi.number().required(),
+        DATABASE_NAME: Joi.string().required(),
+      }),
     }),
   ],
   controllers: [AppController],
