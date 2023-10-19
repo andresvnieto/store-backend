@@ -1,11 +1,13 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import config from './config';
+import { Db } from 'mongodb';
 @Injectable()
 export class AppService {
   constructor(
     @Inject('API_KEY') private apiKey: string,
     @Inject('TASKS') private tasks: any[],
+    @Inject('MONGO') private database: Db,
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
   ) {}
   getHello(): any {
@@ -13,5 +15,10 @@ export class AppService {
     const database = this.configService.database;
     console.log('HEllo world: ' + apiKey + ' ' + database.name);
     return 'HEllo world: ' + apiKey + ' ' + database.name;
+  }
+  async getUsers(): Promise<any> {
+    const usersCollections = this.database.collection('users');
+    const users = await usersCollections.find().toArray();
+    return users;
   }
 }

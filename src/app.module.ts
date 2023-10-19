@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -10,10 +13,8 @@ import { CustomersModule } from './customers/customers.module';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
 import { enviroments } from './config/configuration';
 import config from './config';
-import * as Joi from 'joi';
 
 @Module({
   imports: [

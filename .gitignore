@@ -1,3 +1,6 @@
+#mongo
+/mongo_data
+
 # env
 .env
 
