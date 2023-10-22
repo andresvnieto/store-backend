@@ -10,8 +10,7 @@ import { OrdersModule } from './orders/orders.module';
 import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
 import { CustomersModule } from './customers/customers.module';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
+import { HttpModule } from '@nestjs/axios';
 import { DatabaseModule } from './database/database.module';
 import { enviroments } from './config/configuration';
 import config from './config';
@@ -38,17 +37,6 @@ import config from './config';
     }),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: 'TASKS',
-      useFactory: async (http: HttpService) => {
-        const request = http.get('https://jsonplaceholder.typicode.com/todos');
-        const tasks = await lastValueFrom(request);
-        return tasks.data;
-      },
-      inject: [HttpService],
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
