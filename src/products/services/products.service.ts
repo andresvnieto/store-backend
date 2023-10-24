@@ -1,13 +1,17 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
 import { Db } from 'mongodb';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Product } from '../entities/product.entity';
 @Injectable()
 export class ProductsService {
-  constructor(@Inject('MONGO') private database: Db) {}
+  constructor(
+    @InjectModel(Product.name) private productModel: Model<Product>,
+  ) {}
 
   async findAll(offset: number, limit: number) {
-    const productsCollection = await this.database.collection('products');
-    const products = await productsCollection.find().toArray();
+    const products = await this.productModel.find().exec();
     const copyProducts = [...products];
 
     if (offset > products.length || offset < 0) {
@@ -29,33 +33,33 @@ export class ProductsService {
     }
   }
 
-  async findOne(id: number) {
-    const productsCollection = await this.database.collection('products');
-    const product = productsCollection.findOne((item) => item.id === id);
+  async findOne(id: string) {
+    const product = await this.productModel.findById(id);
     if (!product)
       throw new NotFoundException('El producto:' + id + 'no existe');
     return product;
   }
 
   async create(product: CreateProductDto) {
-    const productsCollection = await this.database.collection('products');
-    const newProduct = {
+    const newProduct = new this.productModel({
       ...product,
-    };
-    return productsCollection.insertOne(newProduct);
+    });
+    return newProduct.save();
   }
 
   async updateOne(id: any, dataProduct: UpdateProductDto) {
-    const productsCollection = await this.database.collection('products');
-    const productExist = await productsCollection.findOneAndUpdate(
+    const productExist = await this.productModel.findByIdAndUpdate(
       { _id: id },
       dataProduct,
+      { new: true },
     );
     return productExist;
   }
 
   async deleteOne(id: any) {
-    const productsCollection = await this.database.collection('products');
-    return productsCollection.findOneAndDelete(id);
+    const product = await this.productModel.findById(id);
+    if (!product)
+      throw new NotFoundException('El producto:' + id + 'no existe');
+    return await this.productModel.findByIdAndDelete(id);
   }
 }

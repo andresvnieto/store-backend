@@ -10,16 +10,7 @@ export class OrdersService {
       id: 0,
       description: 'Lorem ipsum dolor',
       date: new Date(),
-      products: [
-        {
-          id: 0,
-          name: 'Producto 1',
-          description: 'Lorem ipsum dolor',
-          price: 12000,
-          image: 'asd',
-          stock: 23,
-        },
-      ],
+      products: [],
     },
   ];
 

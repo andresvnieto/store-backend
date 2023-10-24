@@ -8,7 +8,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
+// import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { ProductsService } from '../services/products.service';
 import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
 @Controller('products')
@@ -26,20 +26,20 @@ export class ProductsController {
   }
 
   @Get(':productId')
-  getOne(@Param('productId', ParseIntPipe) productId: number) {
+  getOne(@Param('productId') productId: string) {
     return this.productsService.findOne(productId);
   }
 
   @Put(':productId')
   updateOne(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId') productId: string,
     @Body() body: UpdateProductDto,
   ) {
     return this.updateOne(productId, body);
   }
 
   @Delete(':productId')
-  deleteOne(@Param('productId', ParseIntPipe) productId: number) {
+  deleteOne(@Param('productId') productId: string) {
     return this.deleteOne(productId);
   }
 
