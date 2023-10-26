@@ -6,7 +6,7 @@ export class Product extends Document {
   name: string;
   @Prop({ type: String })
   description: string;
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: true, index: true })
   price: number;
   @Prop({ type: String })
   image: string;
@@ -15,3 +15,7 @@ export class Product extends Document {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+ProductSchema.index({
+  price: 1,
+  stock: -1,
+});

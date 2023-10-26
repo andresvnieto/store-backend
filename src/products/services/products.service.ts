@@ -1,8 +1,11 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
-import { Db } from 'mongodb';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  CreateProductDto,
+  FilterProductsDto,
+  UpdateProductDto,
+} from '../dtos/products.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { Product } from '../entities/product.entity';
 @Injectable()
 export class ProductsService {
@@ -10,27 +13,23 @@ export class ProductsService {
     @InjectModel(Product.name) private productModel: Model<Product>,
   ) {}
 
-  async findAll(offset: number, limit: number) {
-    const products = await this.productModel.find().exec();
-    const copyProducts = [...products];
-
-    if (offset > products.length || offset < 0) {
-      offset = 0;
-    }
-
-    if (limit + offset > products.length) {
-      limit = products.length;
-    }
-
-    if (limit + offset < 0) limit = 0;
-
-    const limitProducts = copyProducts.slice(offset, limit + offset);
-
-    if (limitProducts.length > 0) {
-      return limitProducts;
-    } else {
+  async findAll(filterParams: FilterProductsDto) {
+    if (filterParams) {
+      const filters: FilterQuery<Product> = {};
+      const { limit, offset, minPrice, maxPrice } = filterParams;
+      if (minPrice && maxPrice) {
+        filters.price = {
+          $gte: minPrice,
+          $lte: maxPrice,
+        };
+      }
+      const products = await this.productModel
+        .find(filters)
+        .skip(offset)
+        .limit(limit);
       return products;
     }
+    return await this.productModel.find().exec();
   }
 
   async findOne(id: string) {
