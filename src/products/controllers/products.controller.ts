@@ -8,7 +8,6 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-// import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { ProductsService } from '../services/products.service';
 import {
   CreateProductDto,
@@ -40,12 +39,12 @@ export class ProductsController {
     @Param('productId', MongoIdPipe) productId: string,
     @Body() body: UpdateProductDto,
   ) {
-    return this.updateOne(productId, body);
+    return this.productsService.updateOne(productId, body);
   }
 
   @Delete(':productId')
   deleteOne(@Param('productId', MongoIdPipe) productId: string) {
-    return this.deleteOne(productId);
+    return this.productsService.deleteOne(productId);
   }
 
   @Get('/filter')

@@ -26,14 +26,15 @@ export class ProductsService {
       const products = await this.productModel
         .find(filters)
         .skip(offset)
-        .limit(limit);
+        .limit(limit)
+        .populate('brand');
       return products;
     }
-    return await this.productModel.find().exec();
+    return await this.productModel.find().populate('brand').exec();
   }
 
   async findOne(id: string) {
-    const product = await this.productModel.findById(id);
+    const product = await this.productModel.findById(id).populate('brand');
     if (!product)
       throw new NotFoundException('El producto:' + id + 'no existe');
     return product;

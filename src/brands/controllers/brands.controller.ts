@@ -8,16 +8,20 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
+// import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { BrandsService } from '../services/brands.service';
-import { CreateBrandDto, UpdateBrandDto } from '../dtos/brands.dto';
-
+import {
+  CreateBrandDto,
+  FilterBrandsDto,
+  UpdateBrandDto,
+} from '../dtos/brands.dto';
+import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
 @Controller('brands')
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}
   @Get()
-  getAll(@Query('offset') offset, @Query('limit') limit) {
-    return this.brandsService.findAll(Number(offset), Number(limit));
+  getAll(@Query() params: FilterBrandsDto) {
+    return this.brandsService.findAll(params);
   }
 
   @Post()
@@ -27,20 +31,20 @@ export class BrandsController {
   }
 
   @Get(':productId')
-  getOne(@Param('productId', ParseIntPipe) productId: number) {
+  getOne(@Param('productId', MongoIdPipe) productId: string) {
     return this.brandsService.findOne(productId);
   }
 
   @Put(':productId')
   updateOne(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', MongoIdPipe) productId: string,
     @Body() body: UpdateBrandDto,
   ) {
     return this.updateOne(productId, body);
   }
 
   @Delete(':productId')
-  deleteOne(@Param('productId', ParseIntPipe) productId: number) {
+  deleteOne(@Param('productId', MongoIdPipe) productId: string) {
     return this.deleteOne(productId);
   }
 

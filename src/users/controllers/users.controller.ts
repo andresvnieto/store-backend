@@ -8,48 +8,43 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ParseIntPipe } from 'src/common/parse-int/parse-int.pipe';
 import { UsersService } from '../services/users.service';
-import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-
-@ApiTags('users')
-@Controller('users')
+import {
+  CreateUserDto,
+  FilterUsersDto,
+  UpdateUserDto,
+} from '../dtos/users.dto';
+import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
+@Controller('products')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly productsService: UsersService) {}
   @Get()
-  @ApiOperation({ description: 'Lista de usuarios' })
-  getAll(@Query('offset') offset, @Query('limit') limit) {
-    return this.usersService.findAll(Number(offset), Number(limit));
+  getAll(@Query() params: FilterUsersDto) {
+    return this.productsService.findAll(params);
   }
 
   @Post()
   createOne(@Body() body: CreateUserDto) {
     console.log(body);
-    return this.usersService.create(body);
+    return this.productsService.create(body);
   }
 
-  @Get(':userId')
-  getOne(@Param('userId', ParseIntPipe) userId: number) {
-    return this.usersService.findOne(userId);
+  @Get(':productId')
+  getOne(@Param('productId', MongoIdPipe) productId: string) {
+    return this.productsService.findOne(productId);
   }
 
-  @Get(':userId/orders')
-  getOrders(@Param('userId', ParseIntPipe) userId: number) {
-    return this.usersService.findOne(userId);
-  }
-
-  @Put(':userId')
+  @Put(':productId')
   updateOne(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('productId', MongoIdPipe) productId: string,
     @Body() body: UpdateUserDto,
   ) {
-    return this.updateOne(userId, body);
+    return this.productsService.updateOne(productId, body);
   }
 
-  @Delete(':userId')
-  deleteOne(@Param('userId', ParseIntPipe) userId: number) {
-    return this.deleteOne(userId);
+  @Delete(':productId')
+  deleteOne(@Param('productId', MongoIdPipe) productId: string) {
+    return this.productsService.deleteOne(productId);
   }
 
   @Get('/filter')

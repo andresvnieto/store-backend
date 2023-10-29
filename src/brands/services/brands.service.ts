@@ -1,84 +1,56 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  CreateBrandDto,
+  FilterBrandsDto,
+  UpdateBrandDto,
+} from '../dtos/brands.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { Brand } from '../entities/brand.entity';
-import { CreateBrandDto, UpdateBrandDto } from '../dtos/brands.dto';
-
 @Injectable()
 export class BrandsService {
-  private counterId = 0;
-  private brands: Brand[] = [
-    {
-      id: 0,
-      name: 'Brando 1',
-      description: 'Lorem ipsum dolor',
-      image: 'asd',
-    },
-  ];
+  constructor(@InjectModel(Brand.name) private brandModel: Model<Brand>) {}
 
-  findAll(offset: number, limit: number) {
-    const copyBrands = [...this.brands];
-
-    console.log(offset, limit);
-
-    if (offset > this.brands.length || offset < 0) {
-      offset = 0;
+  async findAll(filterParams: FilterBrandsDto) {
+    if (filterParams) {
+      const filters: FilterQuery<Brand> = {};
+      const { limit, offset } = filterParams;
+      const products = await this.brandModel
+        .find(filters)
+        .skip(offset)
+        .limit(limit);
+      return products;
     }
-
-    if (limit + offset > this.brands.length) {
-      limit = this.brands.length;
-    }
-
-    if (limit + offset < 0) limit = 0;
-
-    const limitBrands = copyBrands.slice(offset, limit + offset);
-
-    console.log(limitBrands);
-
-    if (limitBrands.length > 0) {
-      return limitBrands;
-    } else {
-      return this.brands;
-    }
+    return await this.brandModel.find().exec();
   }
 
-  findOne(id: number) {
-    const brand = this.brands.find((item) => item.id === id);
-    if (!brand) throw new NotFoundException('El brando:' + id + 'no existe');
-    return brand;
+  async findOne(id: string) {
+    const product = await this.brandModel.findById(id);
+    if (!product)
+      throw new NotFoundException('El producto:' + id + 'no existe');
+    return product;
   }
 
-  create(brand: CreateBrandDto) {
-    this.counterId = this.counterId + 1;
-    const newBrand = {
-      id: this.counterId,
-      ...brand,
-    };
-    this.brands.push(newBrand);
-    return newBrand;
+  async create(product: CreateBrandDto) {
+    const newBrand = new this.brandModel({
+      ...product,
+    });
+    return newBrand.save();
   }
 
-  updateOne(id: number, dataBrand: UpdateBrandDto) {
-    const brandExist = this.findOne(id);
-    if (brandExist) {
-      const index = this.brands.findIndex((item) => item.id === id);
-      const brand = this.brands[index];
-      const updatedBrand = { ...brand, ...dataBrand };
-      this.brands[index] = updatedBrand;
-      return updatedBrand;
-    } else {
-      return null;
-    }
+  async updateOne(id: any, dataBrand: UpdateBrandDto) {
+    const productExist = await this.brandModel.findByIdAndUpdate(
+      { _id: id },
+      dataBrand,
+      { new: true },
+    );
+    return productExist;
   }
 
-  deleteOne(id: number) {
-    const brandExist = this.findOne(id);
-    if (brandExist) {
-      const newBrands = this.brands.filter((item) => {
-        return item.id !== id;
-      });
-      this.brands = newBrands;
-      return this.brands;
-    } else {
-      return null;
-    }
+  async deleteOne(id: any) {
+    const product = await this.brandModel.findById(id);
+    if (!product)
+      throw new NotFoundException('El producto:' + id + 'no existe');
+    return await this.brandModel.findByIdAndDelete(id);
   }
 }

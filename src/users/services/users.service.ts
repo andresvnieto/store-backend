@@ -1,100 +1,55 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  CreateUserDto,
+  FilterUsersDto,
+  UpdateUserDto,
+} from '../dtos/users.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { User } from '../entities/user.entity';
-import { Order } from 'src/orders/entities/order.entity';
-import { CreateUserDto, UpdateUserDto } from '../dtos/users.dto';
-import { ConfigService } from '@nestjs/config';
-
 @Injectable()
 export class UsersService {
-  constructor(private configService: ConfigService) {}
-  private counterId = 0;
-  private users: User[] = [
-    {
-      id: 0,
-      name: 'Usero 1',
-      email: 'asdasd@gmail.com',
-      orders: [
-        {
-          id: 0,
-          description: 'Lorem ipsum dolor',
-          date: new Date(),
-        },
-      ],
-    },
-  ];
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  findAll(offset: number, limit: number) {
-    const copyUsers = [...this.users];
-
-    console.log(this.configService.get('API_KEY'));
-
-    if (offset > this.users.length || offset < 0) {
-      offset = 0;
+  async findAll(filterParams: FilterUsersDto) {
+    if (filterParams) {
+      const filters: FilterQuery<User> = {};
+      const { limit, offset } = filterParams;
+      const users = await this.userModel
+        .find(filters)
+        .skip(offset)
+        .limit(limit)
+        .populate('brand');
+      return users;
     }
-
-    if (limit + offset > this.users.length) {
-      limit = this.users.length;
-    }
-
-    if (limit + offset < 0) limit = 0;
-
-    const limitUsers = copyUsers.slice(offset, limit + offset);
-
-    console.log(limitUsers);
-
-    if (limitUsers.length > 0) {
-      return limitUsers;
-    } else {
-      return this.users;
-    }
+    return await this.userModel.find().populate('brand').exec();
   }
 
-  findOne(id: number) {
-    const user = this.users.find((item) => item.id === id);
+  async findOne(id: string) {
+    const user = await this.userModel.findById(id).populate('brand');
     if (!user) throw new NotFoundException('El usero:' + id + 'no existe');
     return user;
   }
 
-  create(user: CreateUserDto) {
-    this.counterId = this.counterId + 1;
-    const newUser = {
-      id: this.counterId,
-      orders: [],
+  async create(user: CreateUserDto) {
+    const newUser = new this.userModel({
       ...user,
-    };
-    this.users.push(newUser);
-    return newUser;
+    });
+    return newUser.save();
   }
 
-  updateOne(id: number, dataUser: UpdateUserDto) {
-    const userExist = this.findOne(id);
-    if (userExist) {
-      const index = this.users.findIndex((item) => item.id === id);
-      const user = this.users[index];
-      const updatedUser = { ...user, ...dataUser };
-      this.users[index] = updatedUser;
-      return updatedUser;
-    } else {
-      return null;
-    }
+  async updateOne(id: any, dataUser: UpdateUserDto) {
+    const userExist = await this.userModel.findByIdAndUpdate(
+      { _id: id },
+      dataUser,
+      { new: true },
+    );
+    return userExist;
   }
 
-  deleteOne(id: number) {
-    const userExist = this.findOne(id);
-    if (userExist) {
-      const newUsers = this.users.filter((item) => {
-        return item.id !== id;
-      });
-      this.users = newUsers;
-      return this.users;
-    } else {
-      return null;
-    }
-  }
-
-  getOrdersByUser(id: number): Order[] {
-    const userExist = this.findOne(id);
-    if (!userExist) throw new NotFoundException('El usuario no existe');
-    return userExist.orders;
+  async deleteOne(id: any) {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException('El usero:' + id + 'no existe');
+    return await this.userModel.findByIdAndDelete(id);
   }
 }
