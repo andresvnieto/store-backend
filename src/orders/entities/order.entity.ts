@@ -1,7 +1,8 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Customer } from 'src/customers/entities/customer.entity';
 import { Product } from 'src/products/entities/product.entity';
+@Schema()
 export class Order extends Document {
   @Prop()
   description: string;

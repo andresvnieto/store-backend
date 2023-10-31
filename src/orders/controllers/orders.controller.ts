@@ -8,34 +8,65 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-
+import { OrdersService } from '../services/orders.service';
+import {
+  AddProductsToOrder,
+  CreateOrderDto,
+  FilterOrdersDto,
+  UpdateOrderDto,
+} from '../dtos/orders.dto';
+import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
 @Controller('orders')
 export class OrdersController {
+  constructor(private readonly ordersService: OrdersService) {}
   @Get()
-  getOrders(@Query('limit') limit = 10, @Query('offset') offset = 0) {
-    return { message: `orders limit: ${limit} y offset ${offset}` };
+  getAll(@Query() params: FilterOrdersDto) {
+    return this.ordersService.findAll(params);
   }
 
   @Post()
-  createOne(@Body() body) {
-    return {
-      message: 'Accion de crear',
-      body,
-    };
+  createOne(@Body() body: CreateOrderDto) {
+    return this.ordersService.create(body);
   }
 
   @Get(':orderId')
-  getOrder(@Param('orderId') orderId: string) {
-    return { message: `get order: ${orderId}` };
+  getOne(@Param('orderId', MongoIdPipe) orderId: string) {
+    return this.ordersService.findOne(orderId);
   }
 
   @Put(':orderId')
-  updateOrder(@Param('orderId') orderId: string, @Body() body: any) {
-    return { message: `put order: ${orderId}`, body };
+  updateOne(
+    @Param('orderId', MongoIdPipe) orderId: string,
+    @Body() body: UpdateOrderDto,
+  ) {
+    return this.ordersService.updateOne(orderId, body);
   }
 
   @Delete(':orderId')
-  deleteOrder(@Param('orderId') orderId: string) {
-    return { message: `delete order: ${orderId}` };
+  deleteOne(@Param('orderId', MongoIdPipe) orderId: string) {
+    return this.ordersService.deleteOne(orderId);
+  }
+
+  @Delete(':orderId/product/:productId')
+  deleteOneProduct(
+    @Param('orderId', MongoIdPipe) orderId: string,
+    @Param('productId', MongoIdPipe) productId: string,
+  ) {
+    return this.ordersService.removeProduct(orderId, productId);
+  }
+
+  @Put(':orderId/products')
+  addProducts(
+    @Param('orderId', MongoIdPipe) orderId: string,
+    @Body() body: AddProductsToOrder,
+  ) {
+    return this.ordersService.addProducts(orderId, body);
+  }
+
+  @Get('/filter')
+  filter() {
+    return {
+      message: 'Soy un filter',
+    };
   }
 }

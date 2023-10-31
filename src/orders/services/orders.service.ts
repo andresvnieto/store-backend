@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+  AddProductsToOrder,
   CreateOrderDto,
   FilterOrdersDto,
   UpdateOrderDto,
@@ -19,15 +20,15 @@ export class OrdersService {
         .find(filters)
         .skip(offset)
         .limit(limit)
-        .populate('brand');
+        .populate('products customer');
       return orders;
     }
-    return await this.orderModel.find().populate('brand').exec();
+    return await this.orderModel.find().exec();
   }
 
   async findOne(id: string) {
-    const order = await this.orderModel.findById(id).populate('brand');
-    if (!order) throw new NotFoundException('El ordero:' + id + 'no existe');
+    const order = await this.orderModel.findById(id).populate('products');
+    if (!order) throw new NotFoundException('El order:' + id + 'no existe');
     return order;
   }
 
@@ -38,18 +39,32 @@ export class OrdersService {
     return newOrder.save();
   }
 
-  async updateOne(id: any, dataOrder: UpdateOrderDto) {
-    const orderExist = await this.orderModel.findByIdAndUpdate(
-      { _id: id },
-      dataOrder,
-      { new: true },
-    );
-    return orderExist;
+  async updateOne(id: string, dataOrder: UpdateOrderDto) {
+    const newOrder = await this.orderModel
+      .findByIdAndUpdate(id, { $set: dataOrder }, { new: true })
+      .exec();
+    return newOrder;
   }
 
   async deleteOne(id: any) {
     const order = await this.orderModel.findById(id);
-    if (!order) throw new NotFoundException('El ordero:' + id + 'no existe');
+    if (!order) throw new NotFoundException('El order:' + id + 'no existe');
     return await this.orderModel.findByIdAndDelete(id);
+  }
+
+  async removeProduct(orderId: string, productId: string) {
+    const order = await this.findOne(orderId);
+    if (!order)
+      throw new NotFoundException('El order:' + orderId + 'no existe');
+    order.products.pull(productId);
+    return order.save();
+  }
+
+  async addProducts(orderId: string, products: AddProductsToOrder) {
+    const order = await this.findOne(orderId);
+    if (!order)
+      throw new NotFoundException('El order:' + orderId + 'no existe');
+    products.productsIds.forEach((product) => order.products.push(product));
+    return order.save();
   }
 }
