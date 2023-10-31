@@ -13,6 +13,7 @@ import { CustomersModule } from './customers/customers.module';
 import { HttpModule } from '@nestjs/axios';
 import { DatabaseModule } from './database/database.module';
 import { enviroments } from './config/configuration';
+import { AuthModule } from './auth/auth.module';
 import config from './config';
 
 @Module({
@@ -35,6 +36,7 @@ import config from './config';
         DATABASE_NAME: Joi.string().required(),
       }),
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
