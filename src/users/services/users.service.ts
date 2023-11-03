@@ -7,6 +7,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { User } from '../entities/user.entity';
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -26,8 +28,15 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.userModel.findById(id).populate('brand');
-    if (!user) throw new NotFoundException('El usero:' + id + 'no existe');
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException('El usuario:' + id + 'no existe');
+    return user;
+  }
+
+  async findByEmail(email: string) {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (!user)
+      throw new NotFoundException('El usuario: ' + email + 'no existe');
     return user;
   }
 
@@ -35,7 +44,12 @@ export class UsersService {
     const newUser = new this.userModel({
       ...user,
     });
-    return newUser.save();
+    const saltOrRounds = 10;
+    const hashPassword = await bcrypt.hash(newUser.password, saltOrRounds);
+    newUser.password = hashPassword;
+    const model = await newUser.save();
+    const { password, ...rta } = model.toJSON();
+    return rta;
   }
 
   async updateOne(id: any, dataUser: UpdateUserDto) {

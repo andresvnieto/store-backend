@@ -9,6 +9,8 @@ export class User extends Document {
   email: string;
   @Prop()
   orders: Order[];
+  @Prop()
+  password: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

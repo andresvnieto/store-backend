@@ -31,7 +31,7 @@ import config from './config';
       isGlobal: true,
       load: [config],
       validationSchema: Joi.object({
-        API_KEY: Joi.number().required(),
+        API_KEY: Joi.string().required(),
         PORT: Joi.number().required(),
         DATABASE_NAME: Joi.string().required(),
       }),

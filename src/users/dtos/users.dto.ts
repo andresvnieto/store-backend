@@ -16,6 +16,16 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
   readonly email: string;
+  @IsString()
+  @IsNotEmpty()
+  readonly password: string;
+}
+
+export class GetUserByEmailDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email: string;
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
