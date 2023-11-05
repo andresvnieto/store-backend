@@ -11,6 +11,8 @@ export class User extends Document {
   orders: Order[];
   @Prop()
   password: string;
+  @Prop()
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
