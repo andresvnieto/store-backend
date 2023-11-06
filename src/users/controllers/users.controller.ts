@@ -35,22 +35,22 @@ export class UsersController {
     return this.usersService.findByEmail(body.email);
   }
 
-  @Get(':productId')
-  getOne(@Param('productId', MongoIdPipe) productId: string) {
-    return this.usersService.findOne(productId);
+  @Get(':userId')
+  getOne(@Param('userId', MongoIdPipe) userId: string) {
+    return this.usersService.findOne(userId);
   }
 
-  @Put(':productId')
+  @Put(':userId')
   updateOne(
-    @Param('productId', MongoIdPipe) productId: string,
+    @Param('userId', MongoIdPipe) userId: string,
     @Body() body: UpdateUserDto,
   ) {
-    return this.usersService.updateOne(productId, body);
+    return this.usersService.updateOne(userId, body);
   }
 
-  @Delete(':productId')
-  deleteOne(@Param('productId', MongoIdPipe) productId: string) {
-    return this.usersService.deleteOne(productId);
+  @Delete(':userId')
+  deleteOne(@Param('userId', MongoIdPipe) userId: string) {
+    return this.usersService.deleteOne(userId);
   }
 
   @Get('/filter')

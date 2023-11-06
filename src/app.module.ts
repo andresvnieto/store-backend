@@ -34,6 +34,7 @@ import config from './config';
         API_KEY: Joi.string().required(),
         PORT: Joi.number().required(),
         DATABASE_NAME: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
       }),
     }),
     AuthModule,
