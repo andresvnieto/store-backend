@@ -17,9 +17,12 @@ import {
 } from '../dtos/products.dto';
 import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from 'src/auth/models/roles.models';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -30,6 +33,7 @@ export class ProductsController {
     return this.productsService.findAll(params);
   }
 
+  @Roles(Role.ADMIN)
   @Post()
   createOne(@Body() body: CreateProductDto) {
     console.log(body);
